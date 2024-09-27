@@ -18,3 +18,8 @@
 - show how many links found
 - How to swap terminal with file for logging?
 - How to build and containerize the app and deploy on AWS?
+
+### Demo
+
+https://github.com/user-attachments/assets/4c50f92b-1fde-4616-8ba1-8c36304ffb1a
+
