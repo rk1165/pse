@@ -1,0 +1,15 @@
+{{ define "title" }} home{{ end }}
+
+{{ define "content" }}
+
+    <h1 class="search-container">Personal Search Engine</h1>
+    <div class="search-container">
+        <form action="/search" method="POST">
+            <input type="text" name="q" placeholder="Search..." />
+            <button type="submit">Search</button>
+            <button type="button" onclick="document.querySelector('input[type=text]').value = ''">Clear</button>
+        </form>
+    </div>
+
+{{ end }}
+

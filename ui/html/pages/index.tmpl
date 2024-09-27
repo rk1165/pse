@@ -1,0 +1,33 @@
+{{define "title"}} indexer {{ end }}
+
+{{define "content" }}
+<h1>Enter the URL and relevant element selectors </h1>
+<div class="search-container">
+    <form action="/submit" method="POST">
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" id="url" name="url" required>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title Selector:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="links">Links Selector:</label>
+            <input type="text" id="links" name="links" placeholder="Use when indexing multiple links">
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content Selector:</label>
+            <input type="text" id="content" name="content" required>
+        </div>
+
+		<div class="form-group">
+			<label for=""></label>
+            <button type="submit">Submit</button>
+		</div>
+    </form>
+</div>
+{{ end }}

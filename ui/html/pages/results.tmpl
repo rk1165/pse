@@ -1,0 +1,37 @@
+{{define "title"}} results {{ end }}
+
+{{ define "content" }}
+    <form action="/search" method="POST">
+        <input type="text" name="q" placeholder="Search..."/>
+	    <input type="hidden" name="page" value="1">
+        <button type="submit">Search</button>
+        <button type="button" onclick="document.querySelector('input[type=text]').value = ''">Clear</button>
+    </form>
+    <h1>Search Results</h1>
+	{{ if .Results }}
+    <ul>
+        {{range .Results}}
+            <li>
+                <a href="{{.Url}}">{{.Title}}</a><br>
+                {{.Content}}
+            </li>
+        {{ end }}}
+    </ul>
+    {{else}}
+        <p>No results found</p>
+    {{end}}
+
+    <div class="pagination">
+        <form action="/search" method="POST">
+            <input type="hidden" name="q" value="{{.Query}}">
+            <input type="hidden" name="page" value="{{.PrevPage}}">
+            <button type="submit" {{if eq .CurrentPage 1}}disabled{{end}}>Previous</button>
+        </form>
+        <form action="/search" method="POST">
+            <input type="hidden" name="q" value="{{.Query}}">
+            <input type="hidden" name="page" value="{{.NextPage}}">
+            <button type="submit" {{if not .HasNextPage}}disabled{{end}}>Next</button>
+        </form>
+    </div>
+
+{{ end }}
