@@ -5,25 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-playground/form/v4"
-	"html/template"
 	"net/http"
 	"runtime/debug"
 )
 
-const BasePath = "ui/html/pages/base.tmpl"
+//const BasePath = "ui/html/pages/base.tmpl"
 
 func (app *application) render(w http.ResponseWriter, status int, page string, data interface{}) {
-
-	pagePath := "ui/html/pages/" + page
-	t, err := template.ParseFiles(BasePath, pagePath)
-	if err != nil {
-		err := fmt.Errorf("cannot parse %s template", page)
+	ts, ok := app.templateCache[page]
+	if !ok {
+		err := fmt.Errorf("the template %s does not exist", page)
 		app.serverError(w, err)
 		return
 	}
 
 	buf := new(bytes.Buffer)
-	err = t.Execute(buf, data)
+	err := ts.ExecuteTemplate(buf, "base.tmpl", data)
 	if err != nil {
 		app.serverError(w, err)
 		return

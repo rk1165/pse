@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/form/v4"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -13,12 +14,13 @@ import (
 )
 
 type application struct {
-	errorLog    *log.Logger
-	infoLog     *log.Logger
-	search      models.SearchModelInterface
-	request     models.RequestModelInterface
-	formDecoder *form.Decoder
-	db          *sql.DB
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	search        models.SearchModelInterface
+	request       models.RequestModelInterface
+	templateCache map[string]*template.Template
+	formDecoder   *form.Decoder
+	db            *sql.DB
 }
 
 func main() {
@@ -36,13 +38,20 @@ func main() {
 	}
 	defer db.Close()
 
+	templateCache, err := newTemplateCache()
+
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &application{
-		errorLog:    errorLog,
-		infoLog:     infoLog,
-		search:      &models.SearchModel{DB: db},
-		request:     &models.RequestModel{DB: db},
-		formDecoder: form.NewDecoder(),
-		db:          db,
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		search:        &models.SearchModel{DB: db},
+		request:       &models.RequestModel{DB: db},
+		templateCache: templateCache,
+		formDecoder:   form.NewDecoder(),
+		db:            db,
 	}
 
 	server := &http.Server{

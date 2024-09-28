@@ -5,4 +5,7 @@ init:
 	sqlite3 engine.db < ddl.sql
 	go mod tidy
 
-.PHONY: run init
+build:
+	go build --tags "fts5" -o build/pse ./cmd/web/*.go
+
+.PHONY: run init build

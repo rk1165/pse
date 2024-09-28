@@ -52,7 +52,6 @@ func (app *application) lookup(w http.ResponseWriter, r *http.Request) {
 	prevPage := max(1, currPage-1)
 	nextPage := currPage + 1
 
-	app.infoLog.Printf("currPage %d, prevPage %d, nextPage %d, offset %d", currPage, prevPage, nextPage, offset)
 	app.infoLog.Printf("searchTerm: %s", searchTerm)
 
 	searchResults, err := app.search.Find(searchTerm, offset)

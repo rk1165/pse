@@ -10,6 +10,7 @@
 
 - `make init` to set up the database
 - `make run` to start the server
+- `make build` to build the app as a single binary executable
 
 ### Things to Do
 
