@@ -17,10 +17,3 @@ create table requests
     links   text,
     content text
 );
-
-
--- delete
--- from posts;
---
--- delete
--- from requests;

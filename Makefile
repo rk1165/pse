@@ -6,6 +6,9 @@ init:
 	go mod tidy
 
 build:
-	go build --tags "fts5" -o build/pse ./cmd/web/*.go
+	go build --tags "fts5" -o pse ./cmd/web/*.go
 
-.PHONY: run init build
+clean:
+	sqlite3 engine.db < clean.sql
+
+.PHONY: run init build clean

@@ -1,4 +1,4 @@
-### Personal Search Engine
+# Personal Search Engine
 
 - Many times we would prefer to have our own search engine for looking up any term or things we might have seen in the
   past. This project aims to facilitate that.
@@ -11,6 +11,7 @@
 - `make init` to set up the database
 - `make run` to start the server
 - `make build` to build the app as a single binary executable
+- `make clean` to clean the database table entries
 
 ### Things to Do
 

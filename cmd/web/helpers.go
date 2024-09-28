@@ -9,8 +9,6 @@ import (
 	"runtime/debug"
 )
 
-//const BasePath = "ui/html/pages/base.tmpl"
-
 func (app *application) render(w http.ResponseWriter, status int, page string, data interface{}) {
 	ts, ok := app.templateCache[page]
 	if !ok {
@@ -60,4 +58,16 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 		return err
 	}
 	return nil
+}
+
+func (app *application) newTemplateData(w http.ResponseWriter, r *http.Request) *templateData {
+	session, _ := app.session.Get(r, "flash-session")
+	flash, ok := session.Values["flash"].(string)
+	if ok {
+		delete(session.Values, "flash")
+		session.Save(r, w)
+	}
+	return &templateData{
+		Flash: flash,
+	}
 }

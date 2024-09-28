@@ -76,6 +76,7 @@ func (app *application) lookup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) submit(w http.ResponseWriter, r *http.Request) {
+	session, _ := app.session.Get(r, "flash-session")
 	var form indexingForm
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -92,12 +93,20 @@ func (app *application) submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Index(request, app)
-	if err != nil {
-		err = fmt.Errorf("error while indexing %v", err)
-		app.serverError(w, err)
-		return
-	}
-	app.infoLog.Printf("indexed %s", form.Url)
-	app.render(w, http.StatusOK, "home.tmpl", nil)
+	go func() {
+		ch := make(chan int, 1)
+		Index(request, app, ch)
+		status := <-ch
+		if status != http.StatusOK {
+			err = fmt.Errorf("error while indexing %v", err)
+			app.serverError(w, err)
+			return
+		}
+	}()
+
+	session.Values["flash"] = fmt.Sprintf("Started Indexing %s", form.Url)
+	session.Save(r, w)
+
+	data := app.newTemplateData(w, r)
+	app.render(w, http.StatusOK, "status.tmpl", data)
 }

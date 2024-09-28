@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	"github.com/go-playground/form/v4"
+	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
 	"html/template"
@@ -21,6 +22,7 @@ type application struct {
 	templateCache map[string]*template.Template
 	formDecoder   *form.Decoder
 	db            *sql.DB
+	session       *sessions.CookieStore
 }
 
 func main() {
@@ -52,6 +54,7 @@ func main() {
 		templateCache: templateCache,
 		formDecoder:   form.NewDecoder(),
 		db:            db,
+		session:       sessions.NewCookieStore([]byte("secret")),
 	}
 
 	server := &http.Server{

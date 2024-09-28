@@ -113,3 +113,17 @@ label {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+.flash-message {
+    background-color: #f0f9ff; /* Light blue background */
+    color: #0c5460; /* Darker blue text */
+    border: 1px solid #bee5eb; /* Border similar to background */
+    padding: 15px;
+    margin: 20px auto;
+    width: 50%; /* Center the flash message */
+    text-align: center;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}

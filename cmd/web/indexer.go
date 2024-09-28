@@ -4,6 +4,7 @@ import (
 	"github.com/gocolly/colly"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
+	"net/http"
 	"strings"
 	"sync"
 )
@@ -14,7 +15,7 @@ type Post struct {
 	content string
 }
 
-func Index(request *models.Request, app *application) error {
+func Index(request *models.Request, app *application, ch chan<- int) {
 	inChannel := make(chan string)
 	outChannel := make(chan Post)
 	var wg sync.WaitGroup
@@ -23,7 +24,8 @@ func Index(request *models.Request, app *application) error {
 	links, err := getAllLinks(app, request.Url, request.Links)
 	if err != nil {
 		app.errorLog.Printf("error occurred when getting links %v", err)
-		return err
+		ch <- http.StatusInternalServerError
+		return
 	}
 
 	app.infoLog.Printf("total links %v", len(links))
@@ -43,7 +45,8 @@ func Index(request *models.Request, app *application) error {
 	close(inChannel)
 	wg.Wait()
 	app.infoLog.Printf("finished indexing %v posts", len(links))
-	return nil
+	app.infoLog.Printf("indexed %s", request.Url)
+	ch <- http.StatusOK
 }
 
 func getAllLinks(app *application, site, selector string) ([]string, error) {
@@ -89,7 +92,7 @@ func createPost(app *application, in <-chan string, out chan<- Post, titleSelect
 
 		err := c.Visit(link)
 		if err != nil {
-			app.errorLog.Printf("error occurred when visiting link %s", link)
+			app.errorLog.Printf("error occurred when visiting link %s %v", link, err)
 			return
 		}
 		out <- post

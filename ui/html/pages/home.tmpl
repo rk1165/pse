@@ -5,11 +5,16 @@
     <h1 class="search-container">Personal Search Engine</h1>
     <div class="search-container">
         <form action="/search" method="POST">
-            <input type="text" name="q" placeholder="Search..." />
+            <input type="text" name="q" placeholder="Search..."/>
             <button type="submit">Search</button>
             <button type="button" onclick="document.querySelector('input[type=text]').value = ''">Clear</button>
         </form>
     </div>
+    {{ if .Flash }}
+        <div class="flash-message">
+            {{ .Flash }}
+        </div>
+    {{ end }}
 
 {{ end }}
 
