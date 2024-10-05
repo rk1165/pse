@@ -9,15 +9,9 @@ import (
 	"sync"
 )
 
-type Post struct {
-	title   string
-	url     string
-	content string
-}
-
 func Index(request *models.Request, app *application, ch chan<- int) {
 	inChannel := make(chan string)
-	outChannel := make(chan Post)
+	outChannel := make(chan models.Post)
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -71,23 +65,23 @@ func getAllLinks(app *application, site, selector string) ([]string, error) {
 	return links, nil
 }
 
-func createPost(app *application, in <-chan string, out chan<- Post, titleSelector, contentSelector string) {
+func createPost(app *application, in <-chan string, out chan<- models.Post, titleSelector, contentSelector string) {
 	// only exits if in channel is closed
 	for link := range in {
 		app.infoLog.Printf("processing link %s", link)
 		c := colly.NewCollector()
 		var content string
-		post := Post{url: link}
+		post := models.Post{Url: link}
 
 		c.OnHTML(titleSelector, func(e *colly.HTMLElement) {
 			title := e.Text
-			post.title = clean(title)
+			post.Title = clean(title)
 		})
 
 		c.OnHTML(contentSelector, func(e *colly.HTMLElement) {
 			content = e.Text
 			content = clean(content)
-			post.content = content
+			post.Content = content
 		})
 
 		err := c.Visit(link)
@@ -99,22 +93,16 @@ func createPost(app *application, in <-chan string, out chan<- Post, titleSelect
 	}
 }
 
-func savePost(wg *sync.WaitGroup, app *application, out <-chan Post, jobs int) {
+func savePost(wg *sync.WaitGroup, app *application, out <-chan models.Post, jobs int) {
 	defer wg.Done()
-	stmt, err := app.db.Prepare("INSERT INTO posts(title, url, content) values(?,?,?)")
-	if err != nil {
-		app.errorLog.Printf("error occurred when preparing statement %v", err)
-		return
-	}
-	defer stmt.Close()
 	for i := 0; i < jobs; i++ {
 		post := <-out
-		_, err = stmt.Exec(post.title, post.url, post.content)
+		err := app.post.Insert(post)
 		if err != nil {
 			app.errorLog.Printf("error occurred when inserting post in db %v", err)
 			return
 		}
-		app.infoLog.Printf("post [%v] inserted in db", post.title)
+		app.infoLog.Printf("post [%v] inserted in db", post.Title)
 	}
 }
 

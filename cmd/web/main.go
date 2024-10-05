@@ -17,7 +17,7 @@ import (
 type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
-	search        models.SearchModelInterface
+	post          models.PostModelInterface
 	request       models.RequestModelInterface
 	templateCache map[string]*template.Template
 	formDecoder   *form.Decoder
@@ -49,7 +49,7 @@ func main() {
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
-		search:        &models.SearchModel{DB: db},
+		post:          &models.PostModel{DB: db},
 		request:       &models.RequestModel{DB: db},
 		templateCache: templateCache,
 		formDecoder:   form.NewDecoder(),

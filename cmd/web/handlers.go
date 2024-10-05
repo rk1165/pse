@@ -15,7 +15,7 @@ type indexingForm struct {
 }
 
 type PaginatedResult struct {
-	Results     []models.SearchResult
+	Results     []models.Post
 	Query       string
 	NextPage    int
 	PrevPage    int
@@ -54,7 +54,7 @@ func (app *application) lookup(w http.ResponseWriter, r *http.Request) {
 
 	app.infoLog.Printf("searchTerm: %s", searchTerm)
 
-	searchResults, err := app.search.Find(searchTerm, offset)
+	searchResults, err := app.post.Find(searchTerm, offset)
 	if err != nil {
 		err = fmt.Errorf("searching returned error %v", err)
 		app.serverError(w, err)
@@ -108,5 +108,5 @@ func (app *application) submit(w http.ResponseWriter, r *http.Request) {
 	session.Save(r, w)
 
 	data := app.newTemplateData(w, r)
-	app.render(w, http.StatusOK, "status.tmpl", data)
+	app.render(w, http.StatusOK, "home.tmpl", data)
 }

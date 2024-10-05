@@ -6,6 +6,7 @@ require (
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/gocolly/colly v1.2.0
 	github.com/gorilla/sessions v1.4.0
+	github.com/justinas/alice v1.2.0
 	github.com/mattn/go-sqlite3 v1.14.23
 )
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/justinas/alice"
 	"github.com/rk1165/pse/ui"
 	"io/fs"
 	"net/http"
@@ -17,5 +18,7 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /index", app.index)
 	mux.HandleFunc("POST /search", app.lookup)
 	mux.HandleFunc("POST /submit", app.submit)
-	return mux
+
+	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+	return standard.Then(mux)
 }
