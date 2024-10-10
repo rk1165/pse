@@ -4,6 +4,7 @@ import (
 	"github.com/gocolly/colly"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
+	"github.com/rk1165/pse/pkg/logger"
 	"net/http"
 	"strings"
 	"sync"
@@ -15,20 +16,20 @@ func Index(request *models.Request, app *application, ch chan<- int) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	links, err := getAllLinks(app, request.Url, request.Links)
+	links, err := getAllLinks(request.Url, request.Links)
 	if err != nil {
-		app.errorLog.Printf("error occurred when getting links %v", err)
+		logger.ErrorLog.Printf("error occurred when getting links %v", err)
 		ch <- http.StatusInternalServerError
 		return
 	}
 
-	app.infoLog.Printf("total links %v", len(links))
+	logger.InfoLog.Printf("Total_Links=%d", len(links))
 
 	workers := max(len(links)/10, 1)
-	app.infoLog.Printf("starting %v workers", workers)
+	logger.InfoLog.Printf("Started %d workers", workers)
 
 	for i := 0; i < workers; i++ {
-		go createPost(app, inChannel, outChannel, request.Title, request.Content)
+		go createPost(inChannel, outChannel, request.Title, request.Content)
 	}
 
 	go savePost(&wg, app, outChannel, len(links))
@@ -38,13 +39,14 @@ func Index(request *models.Request, app *application, ch chan<- int) {
 	}
 	close(inChannel)
 	wg.Wait()
-	app.infoLog.Printf("finished indexing %v posts", len(links))
-	app.infoLog.Printf("indexed %s", request.Url)
+	logger.InfoLog.Printf("finished indexing %d posts", len(links))
+	logger.InfoLog.Printf("indexed %s", request.Url)
 	ch <- http.StatusOK
+	close(ch)
 }
 
-func getAllLinks(app *application, site, selector string) ([]string, error) {
-	app.infoLog.Printf("fetching links for site %s", site)
+func getAllLinks(site, selector string) ([]string, error) {
+	logger.InfoLog.Printf("fetching links for site %s", site)
 	var links []string
 	if len(selector) == 0 {
 		links = append(links, site)
@@ -59,16 +61,16 @@ func getAllLinks(app *application, site, selector string) ([]string, error) {
 
 	err := c.Visit(site)
 	if err != nil {
-		app.errorLog.Printf("error fetching links for site %s", site)
+		logger.ErrorLog.Printf("error fetching links for site %s", site)
 		return nil, err
 	}
 	return links, nil
 }
 
-func createPost(app *application, in <-chan string, out chan<- models.Post, titleSelector, contentSelector string) {
+func createPost(in <-chan string, out chan<- models.Post, titleSelector, contentSelector string) {
 	// only exits if in channel is closed
 	for link := range in {
-		app.infoLog.Printf("processing link %s", link)
+		logger.InfoLog.Printf("processing link=%s", link)
 		c := colly.NewCollector()
 		var content string
 		post := models.Post{Url: link}
@@ -86,7 +88,7 @@ func createPost(app *application, in <-chan string, out chan<- models.Post, titl
 
 		err := c.Visit(link)
 		if err != nil {
-			app.errorLog.Printf("error occurred when visiting link %s %v", link, err)
+			logger.ErrorLog.Printf("error occurred when visiting link=%s, error=%v", link, err)
 			return
 		}
 		out <- post
@@ -99,10 +101,10 @@ func savePost(wg *sync.WaitGroup, app *application, out <-chan models.Post, jobs
 		post := <-out
 		err := app.post.Insert(post)
 		if err != nil {
-			app.errorLog.Printf("error occurred when inserting post in db %v", err)
+			logger.ErrorLog.Printf("error occurred when inserting post in db %v", err)
 			return
 		}
-		app.infoLog.Printf("post [%v] inserted in db", post.Title)
+		logger.InfoLog.Printf("post [%v] inserted in db", post.Title)
 	}
 }
 

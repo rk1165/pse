@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
+	"github.com/rk1165/pse/pkg/logger"
 )
 
 type RequestModelInterface interface {
@@ -22,12 +22,12 @@ type RequestModel struct {
 }
 
 func (r *RequestModel) Insert(request *Request) error {
-	log.Printf("inserting data for request %+v", request)
+	logger.InfoLog.Printf("inserting data for request %+v", request)
 	stmt := `INSERT INTO requests(url, title, links, content) VALUES(?, ?, ?, ?)`
 	_, err := r.DB.Exec(stmt, request.Url, request.Title, request.Links, request.Content)
 	if err != nil {
 		return err
 	}
-	log.Println("request Data inserted successfully")
+	logger.InfoLog.Println("request Data inserted successfully")
 	return nil
 }

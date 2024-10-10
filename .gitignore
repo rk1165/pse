@@ -32,6 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-/algorithms-book/data
-
 *.DS_Store

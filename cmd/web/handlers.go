@@ -23,17 +23,16 @@ type PaginatedResult struct {
 	HasNextPage bool
 }
 
-const ItemsPerPage = 10
-
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	app.render(w, http.StatusOK, "home.tmpl", nil)
+	data := app.newTemplateData(w, r)
+	app.render(w, http.StatusOK, "home.tmpl", data)
 }
 
 func (app *application) index(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "index.tmpl", nil)
 }
 
-func (app *application) lookup(w http.ResponseWriter, r *http.Request) {
+func (app *application) search(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		err = fmt.Errorf("error parsing form %v", err)
@@ -71,16 +70,16 @@ func (app *application) lookup(w http.ResponseWriter, r *http.Request) {
 		HasNextPage: hasNextPage,
 	}
 
-	app.render(w, http.StatusOK, "results.tmpl", paginatedResults)
+	app.renderPartial(w, http.StatusOK, "results.tmpl", paginatedResults)
 
 }
 
 func (app *application) submit(w http.ResponseWriter, r *http.Request) {
-	session, _ := app.session.Get(r, "flash-session")
 	var form indexingForm
 	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
+		return
 	}
 
 	app.infoLog.Printf("form: %+v", form)
@@ -104,9 +103,15 @@ func (app *application) submit(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	session, _ := app.session.Get(r, "flash-session")
 	session.Values["flash"] = fmt.Sprintf("Started Indexing %s", form.Url)
-	session.Save(r, w)
+	err = session.Save(r, w)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	data := app.newTemplateData(w, r)
-	app.render(w, http.StatusOK, "home.tmpl", data)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// TODO: page showing the currently indexed pages, also to delete them

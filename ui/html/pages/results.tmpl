@@ -1,37 +1,63 @@
-{{define "title"}} results {{ end }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/static/css/style.css"/>
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700">
+    <title>results</title>
+</head>
+<body>
+<header class="search-container">
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/index">Index</a></li>
+        </ul>
+    </nav>
+</header>
 
-{{ define "content" }}
-    <form action="/search" method="POST">
+<div class="container">
+    <form id="search-form" method="post" hx-post="/search" hx-target="#search-results" hx-swap="outerHTML">
         <input type="text" name="q" placeholder="Search..."/>
-	    <input type="hidden" name="page" value="1">
+        <input type="hidden" name="page" value="1">
         <button type="submit">Search</button>
         <button type="button" onclick="document.querySelector('input[type=text]').value = ''">Clear</button>
     </form>
     <h1>Search Results</h1>
-	{{ if .Results }}
-    <ul>
-        {{range .Results}}
-            <li>
-                <a href="{{.Url}}">{{.Title}}</a><br>
-                {{.Content}}
-            </li>
-        {{ end }}}
-    </ul>
-    {{else}}
-        <p>No results found</p>
-    {{end}}
+
+    <div id="search-results">
+        {{ if .Results }}
+            <ul>
+                {{range .Results}}
+                <li>
+                    <a href="{{.Url}}">{{.Title}}</a><br>
+                    {{.Content}}
+                </li>
+                {{ end }}}
+            </ul>
+        {{else}}
+            <p>No results found</p>
+        {{end}}
+    </div>
 
     <div class="pagination">
-        <form action="/search" method="POST">
+        <form hx-post="/search" method="post" hx-target="#search-results" hx-swap="outerHTML">
             <input type="hidden" name="q" value="{{.Query}}">
             <input type="hidden" name="page" value="{{.PrevPage}}">
             <button type="submit" {{if eq .CurrentPage 1}}disabled{{end}}>Previous</button>
         </form>
-        <form action="/search" method="POST">
+        <form hx-post="/search" method="post" hx-target="#search-results" hx-swap="outerHTML">
             <input type="hidden" name="q" value="{{.Query}}">
             <input type="hidden" name="page" value="{{.NextPage}}">
             <button type="submit" {{if not .HasNextPage}}disabled{{end}}>Next</button>
         </form>
     </div>
+</div>
 
-{{ end }}
+</body>
+</html>
+
+
+

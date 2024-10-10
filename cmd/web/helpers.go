@@ -28,6 +28,24 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 
 }
 
+func (app *application) renderPartial(w http.ResponseWriter, status int, page string, data interface{}) {
+	ts, ok := app.templateCache[page]
+	if !ok {
+		err := fmt.Errorf("the template %s does not exist", page)
+		app.serverError(w, err)
+		return
+	}
+
+	buf := new(bytes.Buffer)
+	err := ts.ExecuteTemplate(buf, page, data)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	w.WriteHeader(status)
+	buf.WriteTo(w)
+}
+
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errorLog.Output(2, trace)
@@ -63,6 +81,7 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 func (app *application) newTemplateData(w http.ResponseWriter, r *http.Request) *templateData {
 	session, _ := app.session.Get(r, "flash-session")
 	flash, ok := session.Values["flash"].(string)
+	app.infoLog.Printf("flash=%s", flash)
 	if ok {
 		delete(session.Values, "flash")
 		session.Save(r, w)

@@ -10,7 +10,7 @@ COPY cmd ./cmd
 RUN ls -l
 COPY internal ./internal
 COPY ui ./ui
-COPY ddl.sql ./
+COPY sql/ddl.sql ./
 COPY Makefile ./
 COPY engine.db ./
 RUN ls -l

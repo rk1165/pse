@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
+	"github.com/rk1165/pse/pkg/logger"
 )
 
 type PostModelInterface interface {
@@ -50,7 +50,7 @@ func (s *PostModel) Find(term string, offset int) ([]Post, error) {
 		searchResult.Content = searchResult.Content[:200] // just show the first 200 characters
 		results = append(results, searchResult)
 	}
-	log.Printf("found results: %v", len(results))
+	logger.InfoLog.Printf("found results: %v", len(results))
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}

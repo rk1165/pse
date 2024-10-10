@@ -7,10 +7,10 @@ import (
 	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
+	"github.com/rk1165/pse/pkg/logger"
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -25,30 +25,29 @@ type application struct {
 	session       *sessions.CookieStore
 }
 
+const ItemsPerPage = 10
+
 func main() {
 
 	addr := flag.String("addr", ":8080", "HTTP network address")
 	dbName := flag.String("db", "engine.db", "SQLite Datasource name")
 	flag.Parse()
 
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-
 	db, err := sql.Open("sqlite3", *dbName)
 	if err != nil {
-		errorLog.Fatal(err)
+		logger.ErrorLog.Fatal(err)
 	}
 	defer db.Close()
 
 	templateCache, err := newTemplateCache()
 
 	if err != nil {
-		errorLog.Fatal(err)
+		logger.ErrorLog.Fatal(err)
 	}
 
 	app := &application{
-		errorLog:      errorLog,
-		infoLog:       infoLog,
+		errorLog:      logger.ErrorLog,
+		infoLog:       logger.InfoLog,
 		post:          &models.PostModel{DB: db},
 		request:       &models.RequestModel{DB: db},
 		templateCache: templateCache,
@@ -59,14 +58,14 @@ func main() {
 
 	server := &http.Server{
 		Addr:         *addr,
-		ErrorLog:     errorLog,
+		ErrorLog:     logger.ErrorLog,
 		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	infoLog.Printf("Starting server on %s", *addr)
+	logger.InfoLog.Printf("Starting server on %s", *addr)
 	err = server.ListenAndServe()
-	errorLog.Fatal(err)
+	logger.ErrorLog.Fatal(err)
 
 }
