@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/justinas/alice"
-	"github.com/rk1165/pse/ui"
 	"io/fs"
 	"net/http"
+
+	"github.com/justinas/alice"
+	"github.com/rk1165/pse/ui"
 )
 
 func (app *application) routes() http.Handler {

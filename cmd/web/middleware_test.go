@@ -2,11 +2,12 @@ package main
 
 import (
 	"bytes"
-	"github.com/rk1165/pse/internal/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/rk1165/pse/internal/assert"
 )
 
 func TestSecureHeaders(t *testing.T) {

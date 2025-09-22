@@ -1,13 +1,14 @@
 package main
 
 import (
+	"net/http"
+	"strings"
+	"sync"
+
 	"github.com/gocolly/colly"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
 	"github.com/rk1165/pse/pkg/logger"
-	"net/http"
-	"strings"
-	"sync"
 )
 
 func Index(request *models.Request, app *application, ch chan<- int) {

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/rk1165/pse/ui"
 	"html/template"
 	"io/fs"
 	"path/filepath"
+
+	"github.com/rk1165/pse/ui"
 )
 
 type templateData struct {

@@ -3,15 +3,16 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/go-playground/form/v4"
 	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/internal/models"
 	"github.com/rk1165/pse/pkg/logger"
-	"html/template"
-	"log"
-	"net/http"
-	"time"
 )
 
 type application struct {

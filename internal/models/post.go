@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rk1165/pse/pkg/logger"
 )
