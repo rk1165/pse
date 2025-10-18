@@ -1,8 +1,8 @@
-drop table if exists posts;
-drop table if exists requests;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS requests;
 
-create virtual table posts
-    using fts5
+CREATE VIRTUAL TABLE posts
+    USING fts5
 (
     title,
     url,
@@ -10,10 +10,10 @@ create virtual table posts
     tokenize = 'porter unicode61 remove_diacritics 1'
 );
 
-create table requests
+CREATE TABLE requests
 (
-    url     text primary key,
-    title   text,
-    links   text,
-    content text
+    url     TEXT PRIMARY KEY ,
+    title   TEXT,
+    links   TEXT,
+    content TEXT
 );

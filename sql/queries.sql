@@ -1,45 +1,45 @@
-select title, content
-from posts;
+SELECT title, content
+FROM posts;
 
-select count(*) as total
-from posts;
+SELECT count(*) as total
+FROM posts;
 
-select title, content,  bm25(posts, 5, 2, 1) as rank
-from posts
-where posts = 'university'
-order by rank;
+SELECT title, content,  bm25(posts, 5, 2, 1) as rank
+FROM posts
+WHERE posts = 'university'
+ORDER BY rank;
 
-select title, content
-from posts
-where posts match 'learn golang';
+SELECT title, content
+FROM posts
+WHERE posts MATCH 'learn golang';
 
 -- prefix search
-select title, content
-from posts
-where posts match 'learn*'
-order by rank;
+SELECT title, content
+FROM posts
+WHERE posts MATCH 'learn*'
+ORDER BY rank;
 
-select highlight(posts, 0, '<b>', '</b>') title,
+SELECT highlight(posts, 0, '<b>', '</b>') title,
        highlight(posts, 2, '<b>', '</b>') content
-from posts
-where posts match 'learn'
-order by rank;
+FROM posts
+WHERE posts MATCH 'learn'
+ORDER BY rank;
 
-select title, content
-from posts
-where posts match 'learn*'
-order by rank
-limit 10;
+SELECT title, content
+FROM posts
+WHERE posts MATCH 'learn*'
+ORDER BY rank
+LIMIT 10;
 
-select title, content
-from posts
-where posts match 'github pages';
+SELECT title, content
+FROM posts
+WHERE posts MATCH 'github pages';
 
-select * from requests;
+SELECT * FROM requests;
 
-select title, content
-from posts
-where posts = 'university'
-order by rank
-limit 10
+SELECT title, content
+FROM posts
+WHERE posts = 'university'
+ORDER BY rank
+LIMIT 10
 OFFSET 20;

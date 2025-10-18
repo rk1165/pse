@@ -1,5 +1,3 @@
-delete
-from posts;
+DELETE FROM posts;
 
-delete
-from requests;
+DELETE FROM requests;
